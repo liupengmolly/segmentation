@@ -20,14 +20,15 @@ class Ngram:
         self.n_gram_stats = None
         self.vocabulary = None
         self.sorted_vocabulary = None
-        if os.path.exists('cache/{}_gram_stats.pickle'.format(n)):
-            stats_file = open('cache/{}_gram_stats.pickle'.format(n),'rb')
+        self.source = datapath.split('/')[-1].split('_')[0]
+        if os.path.exists('cache/{}_{}_gram_stats.pickle'.format(self.source,n)):
+            stats_file = open('cache/{}_gram_stats.pickle'.format(self.source,n),'rb')
             self.n_gram_stats = pickle.load(stats_file);
             stats_file.close()
-            vocabulary_file = open('cache/{}_gram_vocabulary.pickle'.format(n),'rb')
+            vocabulary_file = open('cache/{}_{}_gram_vocabulary.pickle'.format(self.source,n),'rb')
             self.vocabulary = pickle.load(vocabulary_file)
             vocabulary_file.close()
-            sortd_vocabulary_file = open('cache/{}_gram_sorted_vocabulary.pickle'.format(n),'rb')
+            sortd_vocabulary_file = open('cache/{}_{}_gram_sorted_vocabulary.pickle'.format(self.source,n),'rb')
             self.sorted_vocabulary = pickle.load(sortd_vocabulary_file)
             sortd_vocabulary_file.close()
         else:
@@ -50,15 +51,15 @@ class Ngram:
                     if i>=n-1:
                         prefix_key = tuple([word for word in words[i-n+1:i]])
                         self.n_gram_stats[prefix_key][words[i]] = self.n_gram_stats[prefix_key].get(words[i],0)+1
-                f.close()
+            f.close()
         self.sorted_vocabulary = sorted(list(self.vocabulary))
-        stats_file = open('cache/{}_gram_stats.pickle'.format(n),'wb')
+        stats_file = open('cache/{}_{}_gram_stats.pickle'.format(self.source,n),'wb')
         pickle.dump(self.n_gram_stats,stats_file)
         stats_file.close()
-        vocabulary_file = open('cache/{}_gram_vocabulary.pickle'.format(n),'wb')
+        vocabulary_file = open('cache/{}_{}_gram_vocabulary.pickle'.format(self.source,n),'wb')
         pickle.dump(self.vocabulary,vocabulary_file)
         vocabulary_file.close()
-        sorted_vocabulary_file = open('cache/{}_gram_sorted_vocabulary.pickle'.format(n),'wb')
+        sorted_vocabulary_file = open('cache/{}_{}_gram_sorted_vocabulary.pickle'.format(self.source,n),'wb')
         pickle.dump(self.sorted_vocabulary,sorted_vocabulary_file)
         sorted_vocabulary_file.close()
 
@@ -81,4 +82,5 @@ class Ngram:
 
 if __name__ == '__main__':
     two_gram = Ngram(2,'icwb2-data/training/msr_training.utf8')
+    print(two_gram.sorted_vocabulary)
     # two_gram.get_max_suffixword_len()
