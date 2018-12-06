@@ -33,7 +33,7 @@ class MaxProbModel:
             f.close()
 
     def segment(self,line):
-        find_head(line)
+
         find_head
         dynamic
         get_result

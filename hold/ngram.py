@@ -22,7 +22,7 @@ class Ngram:
         self.sorted_vocabulary = None
         self.source = datapath.split('/')[-1].split('_')[0]
         if os.path.exists('cache/{}_{}_gram_stats.pickle'.format(self.source,n)):
-            stats_file = open('cache/{}_gram_stats.pickle'.format(self.source,n),'rb')
+            stats_file = open('cache/{}_{}_gram_stats.pickle'.format(self.source,n),'rb')
             self.n_gram_stats = pickle.load(stats_file);
             stats_file.close()
             vocabulary_file = open('cache/{}_{}_gram_vocabulary.pickle'.format(self.source,n),'rb')
@@ -82,5 +82,5 @@ class Ngram:
 
 if __name__ == '__main__':
     two_gram = Ngram(2,'icwb2-data/training/msr_training.utf8')
-    print(two_gram.sorted_vocabulary)
+    print(len(two_gram.sorted_vocabulary))#88118
     # two_gram.get_max_suffixword_len()
