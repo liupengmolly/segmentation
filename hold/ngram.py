@@ -30,6 +30,7 @@ class Ngram(object):
             vocabulary_counts_file.close()
             sortd_vocabulary_file = open('../cache/{}_{}_gram_sorted_vocabulary.pickle'.format(self.source,n),'rb')
             self.sorted_vocabulary = pickle.load(sortd_vocabulary_file)
+            print(self.sorted_vocabulary)
             sortd_vocabulary_file.close()
         else:
             self.get_gram_stat(n,datapath)
@@ -37,10 +38,14 @@ class Ngram(object):
     def get_gram_stat(self,n,datapath):
         self.n_gram_stats = defaultdict(dict)
         self.vocabulary_counts = dict()
+        # self.vocabulary_idf = defaultdict(set)
         with open(datapath,'r',encoding='utf-8') as f:
             for line in f:
                 pattern = re.compile('( )+')
                 line = re.sub(pattern,' ',line.strip())
+                line = re.sub('[0-9]','0',line)
+                line = re.sub('[０-９]','0',line)
+                line = re.sub('[○|一|二|三|四|五|六|七|八|久|十]', '十', line)
                 words = line.split(' ')
                 len_words = len(words)
                 if len_words == n-1:
@@ -50,7 +55,17 @@ class Ngram(object):
                     if i>=n-1:
                         prefix_key = tuple([word for word in words[i-n+1:i]])
                         self.n_gram_stats[prefix_key][words[i]] = self.n_gram_stats[prefix_key].get(words[i],0)+1
+                        # self.vocabulary_idf[words[i]].add(prefix_key)
             f.close()
+
+        #如下采用tfidf没有效果
+        # tmp_n_gram_stats = defaultdict(dict)
+        # for k,v in self.n_gram_stats.items():
+        #     for sk,sv in v.items():
+        #         tmp_n_gram_stats[k][sk] = sv/len(self.vocabulary_idf[sk])
+        #         self.n_gram_stats[k][sk] = sv/self.vocabulary_counts[sk]
+        # self.n_gram_stats = tmp_n_gram_stats
+
         self.sorted_vocabulary = sorted(list(self.vocabulary_counts.keys()))
         stats_file = open('../cache/{}_{}_gram_stats.pickle'.format(self.source,n),'wb')
         pickle.dump(self.n_gram_stats,stats_file)
